@@ -267,7 +267,7 @@ def get_screen():
     return resize(screen).unsqueeze(0).to(device)
 '''
 
-env.reset()
+#env.reset()
 #plt.figure()
 #plt.imshow(get_screen().cpu().squeeze(0).permute(1, 2, 0).numpy(),
 #           interpolation='none')
