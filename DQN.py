@@ -469,9 +469,10 @@ for i_episode in range(num_episodes):
 
         # Perform one step of the optimization (on the target network)
         optimize_model()
+        
         if done:
-            episode_durations.append(t + 1)
-            plot_durations()
+            # episode_durations.append(t + 1)
+            # plot_durations()
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
