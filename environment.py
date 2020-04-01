@@ -30,9 +30,7 @@ class env():
     def __init__(self, resolution):
         self.w, self.h = resolution
         self.movements = ["a","d","w"]
-        self.epochs_divisor = 2
         self.multiplicator = 0
-        self.best_distance = 0
 
         img = cv2.imread('gameover.jpg')
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -53,7 +51,7 @@ class env():
                 gray_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
                 (_, bw_frame) = cv2.threshold(gray_frame, 127, 255, cv2.THRESH_BINARY)
                 bw_frame = bw_frame[int(7*(self.h/13.0)):int(self.h-(self.h/5)), int(self.w/5):int(self.w-(self.w/5))]
-                bw_frame = cv2.resize(bw_frame,(int(340),int(180))) 
+                bw_frame = cv2.resize(bw_frame,(int(160),int(90))) 
                 self.bw_frame = cv2.bitwise_not(bw_frame)
                 cv2.imshow('frame', self.bw_frame)
                 _ = cv2.waitKey(1)
@@ -67,7 +65,7 @@ class env():
     def step(self, action):
         done = False
         keyboard.send(self.movements[action])
-        time.sleep(0.35)
+        time.sleep(0.33)
         hist = histogram(self.rgb_frame)
         comparation = cv2.compareHist(self.hist_restart, hist, cv2.HISTCMP_BHATTACHARYYA)
         self.multiplicator = time.time() - self.initial_time

@@ -223,8 +223,8 @@ class DQN(nn.Module):
 BATCH_SIZE = 128
 GAMMA = 0.99
 EPS_START = 0.9
-EPS_END = 0.05
-EPS_DECAY = 200
+EPS_END = 0.1
+EPS_DECAY = 2000
 TARGET_UPDATE = 10
 
 # Get screen size so that we can initialize layers correctly based on shape
@@ -243,7 +243,7 @@ target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters())
-memory = ReplayMemory(30000)
+memory = ReplayMemory(100000)
 
 steps_done = 0
 
@@ -258,9 +258,9 @@ def select_action(state):
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was
             # found, so we pick action with the larger expected reward.
-            return policy_net(state).max(1)[1].view(1, 1)
+            return policy_net(state).max(1)[1].view(1, 1), False
     else:
-        return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
+        return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long), True
 
 ######################################################################
 # Training loop
@@ -339,9 +339,9 @@ def optimize_model():
 #
 
 import pandas as pd
-summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': []})
+summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': [], 'noise': []})
 
-num_episodes = 100000
+num_episodes = 10000
 for i_episode in range(num_episodes):
     # Initialize the environment and state
     env.reset()
@@ -352,7 +352,7 @@ for i_episode in range(num_episodes):
 
     for t in count():
         # Select and perform an action
-        action = select_action(state)
+        action, noise = select_action(state)
         _, rewards, done, _ = env.step(action.item())
         reward = torch.tensor([rewards], device=device)
         # Observe new state
@@ -363,7 +363,7 @@ for i_episode in range(num_episodes):
         else:
             next_state = None
 
-        stats = pd.DataFrame({'epoch': [i_episode], 'step': [t], 'reward': [rewards], 'done': [done], 'action': [action.item()]})
+        stats = pd.DataFrame({'epoch': [i_episode], 'step': [t], 'reward': [rewards], 'done': [done], 'action': [action.item()], 'noise': [noise]})
         summary = summary.append(stats, ignore_index=True).copy()
         summary.to_csv('data.csv')
 
@@ -384,6 +384,9 @@ for i_episode in range(num_episodes):
 
     torch.save(target_net, 'target_net.pt')
     torch.save(policy_net, 'policy_net.pt')
+
+torch.save(target_net, 'target_net2.pt')
+torch.save(policy_net, 'policy_net2.pt')
 
 print('Complete')
 plt.ioff()
