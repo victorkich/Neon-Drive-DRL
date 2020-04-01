@@ -365,7 +365,7 @@ for i_episode in range(num_episodes):
 
         stats = pd.DataFrame({'epoch': [i_episode], 'step': [t], 'reward': [rewards], 'done': [done], 'action': [action.item()], 'noise': [noise]})
         summary = summary.append(stats, ignore_index=True).copy()
-        summary.to_csv('data.csv')
+        
 
         # Store the transition in memory
         memory.push(state, action, next_state, reward)
@@ -384,10 +384,10 @@ for i_episode in range(num_episodes):
 
     torch.save(target_net, 'target_net.pt')
     torch.save(policy_net, 'policy_net.pt')
-
+    summary.to_csv('data.csv')
+    
 torch.save(target_net, 'target_net2.pt')
 torch.save(policy_net, 'policy_net2.pt')
-
 print('Complete')
 plt.ioff()
 plt.show()

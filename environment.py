@@ -51,7 +51,7 @@ class env():
                 gray_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
                 (_, bw_frame) = cv2.threshold(gray_frame, 127, 255, cv2.THRESH_BINARY)
                 bw_frame = bw_frame[int(7*(self.h/13.0)):int(self.h-(self.h/5)), int(self.w/5):int(self.w-(self.w/5))]
-                bw_frame = cv2.resize(bw_frame,(int(160),int(90))) 
+                bw_frame = cv2.resize(bw_frame,(int(340),int(180))) 
                 self.bw_frame = cv2.bitwise_not(bw_frame)
                 cv2.imshow('frame', self.bw_frame)
                 _ = cv2.waitKey(1)
