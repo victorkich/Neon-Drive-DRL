@@ -51,7 +51,7 @@ class env():
                 gray_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
                 (_, bw_frame) = cv2.threshold(gray_frame, 127, 255, cv2.THRESH_BINARY)
                 cropped_bw_frame = bw_frame[int(7*(self.h/13.0)):int(self.h-(self.h/5)), int(self.w/5):int(self.w-(self.w/5))]
-                resized_bw_frame = cv2.resize(cropped_bw_frame,(int(320),int(180)))
+                resized_bw_frame = cv2.resize(cropped_bw_frame,(int(340),int(180)))
                 self.bw_frame = cv2.bitwise_not(resized_bw_frame)
                 self.rgb_frame = rgb_frame
                 cv2.imshow('frame', self.bw_frame)

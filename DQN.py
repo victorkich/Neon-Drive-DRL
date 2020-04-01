@@ -25,7 +25,7 @@ parser.add_argument("--resolution", default='1920x1080', required=True,
                     help="insert your monitor 0 resolution")
 args = parser.parse_args()
 input_resolution = args.resolution.split('x')
-path_model = args.save
+path_save = args.save
 
 resolution = [int(input_resolution[0]), int(input_resolution[1])]
 env = environment.env(resolution)
