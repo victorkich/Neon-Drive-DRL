@@ -262,30 +262,6 @@ def select_action(state):
     else:
         return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
 
-
-episode_durations = []
-
-
-def plot_durations():
-    plt.figure(2)
-    plt.clf()
-    durations_t = torch.tensor(episode_durations, dtype=torch.float)
-    plt.title('Training...')
-    plt.xlabel('Episode')
-    plt.ylabel('Duration')
-    plt.plot(durations_t.numpy())
-    # Take 100 episode averages and plot them too
-    if len(durations_t) >= 100:
-        means = durations_t.unfold(0, 100, 1).mean(1).view(-1)
-        means = torch.cat((torch.zeros(99), means))
-        plt.plot(means.numpy())
-
-    plt.pause(0.001)  # pause a bit so that plots are updated
-    if is_ipython:
-        display.clear_output(wait=True)
-        display.display(plt.gcf())
-
-
 ######################################################################
 # Training loop
 # ^^^^^^^^^^^^^
@@ -363,9 +339,7 @@ def optimize_model():
 #
 
 import pandas as pd
-
-summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'torch_reward': [], 'done': [], 'action': []})
-        
+summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': []})
 
 num_episodes = 100000
 for i_episode in range(num_episodes):
@@ -389,7 +363,7 @@ for i_episode in range(num_episodes):
         else:
             next_state = None
 
-        stats = pd.DataFrame({'epoch': [i_episode], 'step': [t], 'reward': [rewards], 'torch_reward': [reward], 'done': [done], 'action': [action]})
+        stats = pd.DataFrame({'epoch': [i_episode], 'step': [t], 'reward': [rewards], 'done': [done], 'action': [action.item()]})
         summary = summary.append(stats, ignore_index=True).copy()
         summary.to_csv('data.csv')
 
@@ -403,8 +377,6 @@ for i_episode in range(num_episodes):
         optimize_model()
         
         if done:
-            episode_durations.append(t + 1)
-            plot_durations()
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
