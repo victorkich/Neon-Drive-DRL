@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/Matplotlib-v3.1.2-blue"/>
   <img src="https://img.shields.io/badge/Argparse-v1.1-blue"/>
   <img src="https://img.shields.io/badge/mss-v5.0.0-blue"/>
+  <img src="https://img.shields.io/badge/Tqdm-v4.42.1-blue"/>
 </p>
 
 ### Deep Q-Network architecture
@@ -21,5 +22,7 @@
 ### Image Processing
 
 ### Reward Function
+
+### Results
 
 If you liked this repository, please don't forget to starred it!   <img src="https://img.shields.io/github/stars/victorkich/Neon-Drive-Reinforcement-Learning?style=social"/>
