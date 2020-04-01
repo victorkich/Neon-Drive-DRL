@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ''' Modules for installation -> torch, torchvision, numpy, keyboard, cv2, mss.
     Use pip3 install 'module'.
 '''
@@ -47,12 +48,12 @@ class env():
                 sct_img = sct.grab(monitor)
                 img_np = np.array(sct_img)
                 rgb_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
-                self.rgb_frame = rgb_frame
                 gray_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
                 (_, bw_frame) = cv2.threshold(gray_frame, 127, 255, cv2.THRESH_BINARY)
-                bw_frame = bw_frame[int(7*(self.h/13.0)):int(self.h-(self.h/5)), int(self.w/5):int(self.w-(self.w/5))]
-                bw_frame = cv2.resize(bw_frame,(int(340),int(180))) 
-                self.bw_frame = cv2.bitwise_not(bw_frame)
+                cropped_bw_frame = bw_frame[int(7*(self.h/13.0)):int(self.h-(self.h/5)), int(self.w/5):int(self.w-(self.w/5))]
+                resized_bw_frame = cv2.resize(cropped_bw_frame,(int(320),int(180)))
+                self.bw_frame = cv2.bitwise_not(resized_bw_frame)
+                self.rgb_frame = rgb_frame
                 cv2.imshow('frame', self.bw_frame)
                 _ = cv2.waitKey(1)
 
@@ -76,7 +77,6 @@ class env():
         else:
             done = True
             rew = 0
-        print(rew)
         return [], rew, done, []
 
     def get_screen(self):

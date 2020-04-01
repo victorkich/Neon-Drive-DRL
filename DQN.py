@@ -1,23 +1,32 @@
 # -*- coding: utf-8 -*-
-import time
-import math
-import random
-import numpy as np
+''' Modules for installation -> torch, tqdm, numpy, argparse, cv2, mss.
+    Use pip3 install 'module'.
+'''
 from collections import namedtuple
 from itertools import count
 from PIL import Image
+from tqdm import tqdm
 import environment
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import torchvision.transforms as T
 import argparse
+import time
+import math
+import random
+import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--resolution", help="insert your monitor 0 resolution")
+parser.add_argument("--train", default='policy_net.pt', required=True,
+                    help="insert your monitor 0 resolution")
+parser.add_argument("--save", default='new_policy_net.pt', required=True,
+                    help="insert your monitor 0 resolution")
+parser.add_argument("--resolution", default='1920x1080', required=True,
+                    help="insert your monitor 0 resolution")
 args = parser.parse_args()
 input_resolution = args.resolution.split('x')
+path_model = args.save
 
 resolution = [int(input_resolution[0]), int(input_resolution[1])]
 env = environment.env(resolution)
@@ -80,17 +89,23 @@ class DQN(nn.Module):
 BATCH_SIZE = 128
 GAMMA = 0.99
 EPS_START = 0.9
-EPS_END = 0.01
-EPS_DECAY = 1000
-TARGET_UPDATE = 50
+EPS_END = 0.03
+EPS_DECAY = 700
+TARGET_UPDATE = 15
 
 init_screen = env.get_screen()
 _, _, screen_height, screen_width = init_screen.shape
 
-# Get number of actions from gym action space
+# Get number of actions from action space
 n_actions = 3
 
-policy_net = DQN(screen_height, screen_width, n_actions).to(device)
+if args.train:
+    path_train = args.train
+    policy_net = torch.load(path_train)
+    policy_net.eval()
+else:
+    policy_net = DQN(screen_height, screen_width, n_actions).to(device)
+
 target_net = DQN(screen_height, screen_width, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
@@ -159,22 +174,19 @@ def optimize_model():
     optimizer.step()
 
 import pandas as pd
-summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': [], 
+summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': [],
                         'evaluation_state': []})
 
 evaluation_state = False
 
-num_episodes = 8000
-for i_episode in range(num_episodes):
+num_episodes = 9000
+for i_episode in tqdm(range(num_episodes)):
     # Initialize the environment and state
     env.reset()
 
     last_screen = env.get_screen()
     current_screen = env.get_screen()
     state = current_screen - last_screen
-
-    if evaluation_state:
-        i_episode = i_episode - 1
 
     for t in count():
         # Select and perform an action
@@ -200,21 +212,20 @@ for i_episode in range(num_episodes):
 
             # Perform one step of the optimization (on the target network)
             optimize_model()
-        
+
         # Move to the next state
         state = next_state
 
         if done:
             evaluation_state = not evaluation_state
+            if evaluation_state:
+                i_episode = i_episode - 1
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(policy_net.state_dict())
 
-    torch.save(policy_net, 'policy_net.pt')
+    torch.save(policy_net, path_save)
     summary.to_csv('data.csv')
 
-torch.save(policy_net, 'policy_net2.pt')
 print('Complete')
-plt.ioff()
-plt.show()
