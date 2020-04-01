@@ -18,10 +18,10 @@ import random
 import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--train", default='policy_net.pt', required=True,
-                    help="insert your monitor 0 resolution")
+parser.add_argument("--train", default='policy_net.pt',
+                    help="path of your actual train model")
 parser.add_argument("--save", default='new_policy_net.pt', required=True,
-                    help="insert your monitor 0 resolution")
+                    help="path of your new train model")
 parser.add_argument("--resolution", default='1920x1080', required=True,
                     help="insert your monitor 0 resolution")
 args = parser.parse_args()
