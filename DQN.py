@@ -1,18 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Reinforcement Learning (DQN) Tutorial
-=====================================
-**Author**: `Adam Paszke <https://github.com/apaszke>`_
-This tutorial shows how to use PyTorch to train a Deep Q Learning (DQN) agent
-on the CartPole-v0 task from the `OpenAI Gym <https://gym.openai.com/>`__.
-**Task**
-The agent has to decide between two actions - moving the cart left or
-right - so that the pole attached to it stays upright. You can find an
-official leaderboard with various algorithms and visualizations at the
-`Gym website <https://gym.openai.com/envs/CartPole-v0>`__.
-.. figure:: /_static/img/cartpole.gif
-   :alt: cartpole
-   cartpole
+'''
 As the agent observes the current state of the environment and chooses
 an action, the environment *transitions* to a new state, and also
 returns a reward that indicates the consequences of the action. In this
@@ -31,17 +18,7 @@ render all the frames.
 Strictly speaking, we will present the state as the difference between
 the current screen patch and the previous one. This will allow the agent
 to take the velocity of the pole into account from one image.
-**Packages**
-First, let's import needed packages. Firstly, we need
-`gym <https://gym.openai.com/docs>`__ for the environment
-(Install using `pip install gym`).
-We'll also use the following from PyTorch:
--  neural networks (``torch.nn``)
--  optimization (``torch.optim``)
--  automatic differentiation (``torch.autograd``)
--  utilities for vision tasks (``torchvision`` - `a separate
-   package <https://github.com/pytorch/vision>`__).
-"""
+'''
 
 import time
 import math
@@ -221,60 +198,6 @@ class DQN(nn.Module):
         x = F.relu(self.bn3(self.conv3(x)))
         return self.head(x.view(x.size(0), -1))
 
-
-######################################################################
-# Input extraction
-# ^^^^^^^^^^^^^^^^
-#
-# The code below are utilities for extracting and processing rendered
-# images from the environment. It uses the ``torchvision`` package, which
-# makes it easy to compose image transforms. Once you run the cell it will
-# display an example patch that it extracted.
-#
-'''
-resize = T.Compose([T.ToPILImage(),
-                    T.Resize(40, interpolation=Image.CUBIC),
-                    T.ToTensor()])
-
-def get_cart_location(screen_width):
-    world_width = env.x_threshold * 2
-    scale = screen_width / world_width
-    return int(env.state[0] * scale + screen_width / 2.0)  # MIDDLE OF CART
-
-def get_screen():
-    # Returned screen requested by gym is 400x600x3, but is sometimes larger
-    # such as 800x1200x3. Transpose it into torch order (CHW).
-    screen = env.render().transpose((2, 0, 1))
-    # Cart is in the lower half, so strip off the top and bottom of the screen
-    _, screen_height, screen_width = screen.shape
-    screen = screen[:, int(screen_height*0.4):int(screen_height * 0.8)]
-    view_width = int(screen_width * 0.6)
-    cart_location = get_cart_location(screen_width)
-    if cart_location < view_width // 2:
-        slice_range = slice(view_width)
-    elif cart_location > (screen_width - view_width // 2):
-        slice_range = slice(-view_width, None)
-    else:
-        slice_range = slice(cart_location - view_width // 2,
-                            cart_location + view_width // 2)
-    # Strip off the edges, so that we have a square image centered on a cart
-    screen = screen[:, :, slice_range]
-    # Convert to float, rescale, convert to torch tensor
-    # (this doesn't require a copy)
-    screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
-    screen = torch.from_numpy(screen)
-    # Resize, and add a batch dimension (BCHW)
-    return resize(screen).unsqueeze(0).to(device)
-'''
-
-#env.reset()
-#plt.figure()
-#plt.imshow(get_screen().cpu().squeeze(0).permute(1, 2, 0).numpy(),
-#           interpolation='none')
-#plt.title('Example extracted screen')
-#plt.show()
-
-
 ######################################################################
 # Training
 # --------
@@ -320,7 +243,7 @@ target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters())
-memory = ReplayMemory(10000)
+memory = ReplayMemory(30000)
 
 steps_done = 0
 
@@ -439,7 +362,12 @@ def optimize_model():
 # duration improvements.
 #
 
-num_episodes = 500
+import pandas as pd
+
+summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'torch_reward': [], 'done': [], 'action': []})
+        
+
+num_episodes = 100000
 for i_episode in range(num_episodes):
     # Initialize the environment and state
     env.reset()
@@ -451,8 +379,8 @@ for i_episode in range(num_episodes):
     for t in count():
         # Select and perform an action
         action = select_action(state)
-        _, reward, done, _ = env.step(action.item())
-        reward = torch.tensor([reward], device=device)
+        _, rewards, done, _ = env.step(action.item())
+        reward = torch.tensor([rewards], device=device)
         # Observe new state
         last_screen = current_screen
         current_screen = env.get_screen()
@@ -460,6 +388,10 @@ for i_episode in range(num_episodes):
             next_state = current_screen - last_screen
         else:
             next_state = None
+
+        stats = pd.DataFrame({'epoch': [i_episode], 'step': [t], 'reward': [rewards], 'torch_reward': [reward], 'done': [done], 'action': [action]})
+        summary = summary.append(stats, ignore_index=True).copy()
+        summary.to_csv('data.csv')
 
         # Store the transition in memory
         memory.push(state, action, next_state, reward)
@@ -471,18 +403,19 @@ for i_episode in range(num_episodes):
         optimize_model()
         
         if done:
-            # episode_durations.append(t + 1)
-            # plot_durations()
+            episode_durations.append(t + 1)
+            plot_durations()
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(policy_net.state_dict())
 
+    torch.save(target_net, 'target_net.pt')
+    torch.save(policy_net, 'policy_net.pt')
+
 print('Complete')
-#env.render()
-#env.close()
 plt.ioff()
-#plt.show()
+plt.show()
 
 ######################################################################
 # Here is the diagram that illustrates the overall resulting data flow.
