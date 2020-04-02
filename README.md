@@ -2,7 +2,7 @@
 
 <p align="justify"> 
   <img src="https://media.giphy.com/media/XBuh0LZxoCoNgx1g1M/giphy.webp" alt="Neon Drive" align="right">
-  <a>Neon Drive is a slick retro-futuristic and '80s inspired arcade game. This game has a very simple purpose, to deviate from fixed abstacles over time using 3 types of discrete actions: left, right and no movement. In this case, Neon Drive will serve as the environment for our reinforcement learning algorithm.</a>
+  <a>Neon Drive is a slick retro-futuristic and '80s inspired arcade game. This game has a very simple purpose, to deviate from fixed abstacles over time using 3 types of discrete actions: left, right and straight. In this case, Neon Drive will serve as the environment for our reinforcement learning algorithm.</a>
   <a>To use this algorithm you need to open the game and enter in 'endurence' mode. Let the car hit an obstacle, in the restart screen run the following command:</a></p>
   
 ```shell
@@ -38,7 +38,7 @@ pip3 install -r requirements.txt
 <p align="justify" float="left">
   Neural networks can usually solve tasks just by looking at the location, so let's use a piece of the screen centered on the car as an input. By using only image our task becomes much more difficult. Since we cannot render multiple environments at the same time, we need a lot of training time. Strictly speaking, we'll display the status as the difference between the current and the previous screen. This will allow the agent to take into account the post speed from an image.
     
-  Our model will be a convolutional neural network that takes in the difference between the current and previous screen patches. It has two outputs, representing ![equation](https://latex.codecogs.com/gif.latex?Q(s,&space;\mathrm{left})) and ![equation](https://latex.codecogs.com/gif.latex?Q(s,&space;\mathrm{right})) where ![equation](https://latex.codecogs.com/gif.latex?s) is the input to the network. In effect, the network is trying to predict the *expected return* of taking each action given the current input.
+  Our model will be a convolutional neural network that takes in the difference between the current and previous screen patches. It has three outputs, representing ![equation](https://latex.codecogs.com/gif.latex?Q(s,&space;\mathrm{left})), ![equation](https://latex.codecogs.com/gif.latex?Q(s,&space;\mathrm{right})) and ![equation](https://latex.codecogs.com/gif.latex?Q(s,&space;\mathrm{straight})) where ![equation](https://latex.codecogs.com/gif.latex?s) is the input to the network. In effect, the network is trying to predict the *expected return* of taking each action given the current input.
 </p>
 
 ### Image Processing
@@ -53,7 +53,6 @@ pip3 install -r requirements.txt
   <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
   <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
 </p>
-
 
 ### Reward Function
 <p align="justify" float="left"> 
