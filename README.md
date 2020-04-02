@@ -17,7 +17,7 @@ _Obs: If you have problems with terminal environment variables please add -E aft
 
 #### Requirements
 
-All of requirements is show in the shields bellow, but if you want to install all of then run the following line:
+All of requirements is show in the shields bellow, but if you want to install all of then, enter the repository and execute the following line of code:
 ```shell
 pip3 install -r requirements.txt
 ```
@@ -34,16 +34,46 @@ pip3 install -r requirements.txt
   <img src="https://img.shields.io/badge/Tqdm-v4.42.1-blue"/>
 </p>
 
-
-### Deep Q-Network architecture
+### Deep Q-Network 
+<p align="justify" float="left">
+  Neural networks can usually solve tasks just by looking at the location, so let's use a piece of the screen centered on the car as an input. By using only image our task becomes much more difficult. Since we cannot render multiple environments at the same time, we need a lot of training time. Strictly speaking, we'll display the status as the difference between the current and the previous screen. This will allow the agent to take into account the post speed from an image.
+    
+  Our model will be a convolutional neural network that takes in the difference between the current and previous screen patches. It has two outputs, representing ![equation](https://latex.codecogs.com/gif.latex?Q(s,&space;\mathrm{left})) and ![equation](https://latex.codecogs.com/gif.latex?Q(s,&space;\mathrm{right})) where ![equation](https://latex.codecogs.com/gif.latex?s) is the input to the network. In effect, the network is trying to predict the *expected return* of taking each action given the current input.
+</p>
 
 ### Image Processing
 <p align="justify"> 
-  <a>The image processing performed in this work is quite simple, but it is very important for the overall functioning of the algorithm. Through the mss module the screen was captured and transformed into a numpy array      variable. With the BGR screen saved, we applied a color filter available in the OpenCV module to transform everything to grayscale. We cut 53.84% of the upper pixels, 20% of the lower pixels, and 20% of the left and   right pixels. After that, we applied the threshhold function to transform the image to black and white. Finally, we resize the final image to 160x90 pixels. You can follow the steps of this process in the following images:</a>
+  <a>The image processing performed in this work is quite simple, but it is very important for the overall functioning of the algorithm. Through the mss module the screen was captured and transformed into a numpy array variable. With the BGR screen saved, we applied a color filter available in the OpenCV module to transform everything to grayscale. We cut 53.84% of the upper pixels, 20% of the lower pixels, and 20% of the left and   right pixels. After that, we applied the threshhold function to transform the image to black and white. Finally, we resize the final image to 160x90 pixels. You can follow the steps of this process in the following images:</a>
 </p>
 
+<p align="center", float="left"> 
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+</p>
+
+
 ### Reward Function
+<p align="justify" float="left"> 
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive" align="right">
+  As the agent observes the current state of the environment and chooses an action, the environment transitions to a new state, and also returns a reward that indicates the consequences of  the action. In this task, rewards are +1 for every incremental timestep and the environment terminates if the car hits the obstacle. This means better performing scenarios will run for longer duration, accumulating larger return.
+
+  Our aim will be to train a policy that tries to maximize the discounted, cumulative reward ![equation](https://latex.codecogs.com/gif.latex?R_{t_0}&space;=&space;\sum_{t=t_0}^{\infty}&space;\gamma^{t&space;-&space;t_0}&space;r_t) , where ![equation](https://latex.codecogs.com/gif.latex?R_{t_0}) is also known as the return. The discount, ![equation](https://latex.codecogs.com/gif.latex?\gamma) , should be a constant between 0 and 1 that ensures the sum converges. It makes rewards from the uncertain far future less important for our agent than the ones in the near future that it can be fairly confident about.
+</p>
 
 ### Results
+<p align="justify"> 
+  <a></a>
+</p>
 
-If you liked this repository, please don't forget to starred it!   <img src="https://img.shields.io/github/stars/victorkich/Neon-Drive-Reinforcement-Learning?style=social"/>
+<p align="center", float="left"> 
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+</p>
+
+<p align="justify"> 
+  <a>If you liked this repository, please don't forget to starred it!</a>  <img src="https://img.shields.io/github/stars/victorkich/Neon-Drive-Reinforcement-Learning?style=social"/>
+</p>
