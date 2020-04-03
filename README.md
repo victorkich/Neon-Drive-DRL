@@ -1,5 +1,4 @@
 ## Neon Drive - A Steam Game
-
 <p align="justify"> 
   <img src="https://media.giphy.com/media/XBuh0LZxoCoNgx1g1M/giphy.webp" alt="Neon Drive" align="right" width="320">
   <a>Neon Drive is a slick retro-futuristic and '80s inspired arcade game. This game has a very simple purpose, to deviate from fixed abstacles over time using 3 types of discrete actions: left, right and straight. In this case, Neon Drive will serve as the environment for our reinforcement learning algorithm.</a>
@@ -17,8 +16,10 @@ sudo python3 dqn.py --resolution 1920x1080 --train policy_net.pth
 _Obs: If you have problems with terminal environment variables please add -E after sudo._
 
 #### Requirements
+<p align="justify"> 
+ <a>All of requirements is show in the shields bellow, but if you want to install all of then, enter the repository and execute the following line of code:</a>
+</p>
 
-All of requirements is show in the shields bellow, but if you want to install all of then, enter the repository and execute the following line of code:
 ```shell
 pip3 install -r requirements.txt
 ```
@@ -48,15 +49,15 @@ the current screen patch and the previous one. This will allow the agent to take
 </p>
 
 <p align="center", float="left"> 
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="https://media.giphy.com/media/dxlpoLDVcELAUNeSSJ/giphy.webp" alt="Neon Drive" width="320">
+  <img src="https://media.giphy.com/media/RizRWwZgptmwY3yWhA/giphy.webp" alt="Neon Drive" width="320">
+  <img src="https://media.giphy.com/media/eJuVcagVg5zKpKZswU/giphy.webp" alt="Neon Drive" width="320">
+  <img src="https://media.giphy.com/media/hr3XefvI6v6lS5ARIG/giphy.webp" alt="Neon Drive" width="320">
 </p>
 
 ### Reward Function
 <p align="justify" float="left"> 
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive" align="right">
+  <img src="https://media.giphy.com/media/jS8vrTLvwG1Oox4kLH/giphy.webp" alt="Neon Drive" align="right" width="320">
   As the agent observes the current state of the environment and chooses an action, the environment transitions to a new state, and also returns a reward that indicates the consequences of  the action. In this task, rewards are +1 for every incremental timestep and the environment terminates if the car hits the obstacle. This means better performing scenarios will run for longer duration, accumulating larger return.
 
   Our aim will be to train a policy that tries to maximize the discounted, cumulative reward ![equation](https://latex.codecogs.com/gif.latex?R_{t_0}&space;=&space;\sum_{t=t_0}^{\infty}&space;\gamma^{t&space;-&space;t_0}&space;r_t) , where ![equation](https://latex.codecogs.com/gif.latex?R_{t_0}) is also known as the return. The discount, ![equation](https://latex.codecogs.com/gif.latex?\gamma) , should be a constant between 0 and 1 that ensures the sum converges. It makes rewards from the uncertain far future less important for our agent than the ones in the near future that it can be fairly confident about.
