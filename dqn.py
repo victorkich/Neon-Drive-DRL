@@ -19,7 +19,7 @@ import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--train", help="path of your actual train model")
-parser.add_argument("--save", default='new_policy_net.pt', required=True,
+parser.add_argument("--save", default='new_policy_net.pth', required=True,
                     help="path of your new train model")
 parser.add_argument("--resolution", default='1920x1080', required=True,
                     help="insert your monitor 0 resolution")
@@ -189,7 +189,7 @@ for i_episode in tqdm(range(num_episodes)):
         # Select and perform an action
         action = select_action(state, evaluation_state)
         _, rewards, done, _ = env.step(action.item())
-        
+
         if not evaluation_state:
             reward = torch.tensor([rewards], device=device)
 
