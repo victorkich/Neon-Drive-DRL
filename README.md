@@ -1,7 +1,7 @@
 ## Neon Drive - A Steam Game
 
 <p align="justify"> 
-  <img src="https://media.giphy.com/media/XBuh0LZxoCoNgx1g1M/giphy.webp" alt="Neon Drive" align="right" width="300">
+  <img src="https://media.giphy.com/media/XBuh0LZxoCoNgx1g1M/giphy.webp" alt="Neon Drive" align="right" width="320">
   <a>Neon Drive is a slick retro-futuristic and '80s inspired arcade game. This game has a very simple purpose, to deviate from fixed abstacles over time using 3 types of discrete actions: left, right and straight. In this case, Neon Drive will serve as the environment for our reinforcement learning algorithm.</a>
   <a>To use this algorithm you need to open the game and enter in 'endurence' mode. Let the car hit an obstacle, in the restart screen run the following command:</a>
 </p>
