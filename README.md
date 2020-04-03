@@ -1,7 +1,7 @@
 ## Neon Drive - A Steam Game
 
 <p align="justify"> 
-  <img src="https://media.giphy.com/media/XBuh0LZxoCoNgx1g1M/giphy.webp" alt="Neon Drive" align="right">
+  <img src="https://media.giphy.com/media/XBuh0LZxoCoNgx1g1M/giphy.webp" alt="Neon Drive" align="right" width="300">
   <a>Neon Drive is a slick retro-futuristic and '80s inspired arcade game. This game has a very simple purpose, to deviate from fixed abstacles over time using 3 types of discrete actions: left, right and straight. In this case, Neon Drive will serve as the environment for our reinforcement learning algorithm.</a>
   <a>To use this algorithm you need to open the game and enter in 'endurence' mode. Let the car hit an obstacle, in the restart screen run the following command:</a>
 </p>
@@ -24,7 +24,6 @@ pip3 install -r requirements.txt
 ```
 
 <p align="center"> 
-  <img src="https://img.shields.io/badge/Python-v3.6.9-blue"/>
   <img src="https://img.shields.io/badge/PyTorch-v1.4.0-blue"/>
   <img src="https://img.shields.io/badge/TorchVision-v0.5.0-blue"/>
   <img src="https://img.shields.io/badge/OpenCV-v4.2.0-blue"/>
@@ -49,7 +48,6 @@ the current screen patch and the previous one. This will allow the agent to take
 </p>
 
 <p align="center", float="left"> 
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
   <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
   <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
   <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
