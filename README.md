@@ -7,7 +7,7 @@
 </p>
   
 ```shell
-sudo python3 DQN.py --resolution 1920x1080 --train policy_net.pt --save new_policy_net.pt
+sudo python3 dqn.py --resolution 1920x1080 --train policy_net.pth
 ```
 
 <p align="justify"> 
