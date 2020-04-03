@@ -45,11 +45,15 @@ the current screen patch and the previous one. This will allow the agent to take
 
 ### Image Processing
 <p align="justify"> 
-  <a>The image processing performed in this work is quite simple, but it is very important for the overall functioning of the algorithm. Through the mss module the screen was captured and transformed into a numpy array variable. With the BGR screen saved, we applied a color filter available in the OpenCV module to transform everything to grayscale. We cut 53.84% of the upper pixels, 20% of the lower pixels, and 20% of the left and   right pixels. After that, we applied the threshhold function to transform the image to black and white. Finally, we resize the final image to 160x90 pixels. You can follow the steps of this process in the following images:</a>
+  <a>The image processing performed in this work is quite simple, but it is very important for the overall functioning of the algorithm. Through the mss module the screen was captured and transformed into a numpy array variable. With the BGR screen saved, we applied a color filter available in the OpenCV module to transform everything to grayscale. We cut 53.84% of the upper pixels, 20% of the lower pixels, and 20% of the left and   right pixels. After that, we applied the threshhold function to transform the image to black and white. Finally, we resize the final image to 160x90 pixels and invert all of the binary pixels. You can follow the steps of this process in the following images:</a>
 </p>
 
-<p align="center", float="left"> 
+<p align="center"> 
   <img src="media/image_process_comparation.gif" alt="Image Process Comparation"/>
+</p>
+
+<p align="center"> 
+  <a>In order, the respective images are: normal input image, image converted to grayscale, cropped image and lastly the cropped image with the binary pixels inverted.</a>
 </p>
 
 ### Reward Function
