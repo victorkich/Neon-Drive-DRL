@@ -49,10 +49,7 @@ the current screen patch and the previous one. This will allow the agent to take
 </p>
 
 <p align="center", float="left"> 
-  <img src="https://media.giphy.com/media/dxlpoLDVcELAUNeSSJ/giphy.webp" alt="Neon Drive" width="320">
-  <img src="https://media.giphy.com/media/RizRWwZgptmwY3yWhA/giphy.webp" alt="Neon Drive" width="320">
-  <img src="https://media.giphy.com/media/eJuVcagVg5zKpKZswU/giphy.webp" alt="Neon Drive" width="320">
-  <img src="https://media.giphy.com/media/hr3XefvI6v6lS5ARIG/giphy.webp" alt="Neon Drive" width="320">
+  <img src="media/image_process_comparation.gif" alt="Image Process Comparation"/>
 </p>
 
 ### Reward Function
