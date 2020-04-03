@@ -31,7 +31,6 @@ class env():
     def __init__(self, resolution):
         self.w, self.h = resolution
         self.movements = ["a","d","w"]
-        self.multiplicator = 0
 
         img = cv2.imread('gameover.jpg')
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -47,14 +46,13 @@ class env():
             while True:
                 sct_img = sct.grab(monitor)
                 img_np = np.array(sct_img)
-                rgb_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
                 gray_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
                 (_, bw_frame) = cv2.threshold(gray_frame, 127, 255, cv2.THRESH_BINARY)
-                cropped_bw_frame = bw_frame[int(7*(self.h/13.0)):int(self.h-(self.h/5)), int(self.w/5):int(self.w-(self.w/5))]
-                resized_bw_frame = cv2.resize(cropped_bw_frame,(int(340),int(180)))
+                cropped_bw_frame = bw_frame[int(7*(self.h/13.0)):int(self.h-(self.h/5)),
+                                            int(self.w/5):int(self.w-(self.w/5))]
+                resized_bw_frame = cv2.resize(cropped_bw_frame,(int(160),int(90)))
                 self.bw_frame = cv2.bitwise_not(resized_bw_frame)
-                self.rgb_frame = rgb_frame
-                cv2.imshow('frame', self.bw_frame)
+                self.rgb_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
                 _ = cv2.waitKey(1)
 
     def reset(self):
@@ -66,11 +64,11 @@ class env():
     def step(self, action):
         done = False
         keyboard.send(self.movements[action])
-        time.sleep(0.33)
+        time.sleep(0.35)
         hist = histogram(self.rgb_frame)
         comparation = cv2.compareHist(self.hist_restart, hist, cv2.HISTCMP_BHATTACHARYYA)
-        self.multiplicator = time.time() - self.initial_time
-        if self.multiplicator >= 50:
+        multiplicator = time.time() - self.initial_time
+        if multiplicator >= 50:
             done = True
         if comparation > 0.15:
             rew = 1

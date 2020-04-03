@@ -89,8 +89,8 @@ BATCH_SIZE = 128
 GAMMA = 0.99
 EPS_START = 0.9
 EPS_END = 0.03
-EPS_DECAY = 700
-TARGET_UPDATE = 15
+EPS_DECAY = 250
+TARGET_UPDATE = 30
 
 init_screen = env.get_screen()
 _, _, screen_height, screen_width = init_screen.shape
@@ -110,7 +110,7 @@ target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters())
-memory = ReplayMemory(100000)
+memory = ReplayMemory(20000)
 
 steps_done = 0
 
@@ -119,15 +119,13 @@ def select_action(state, evaluation_state):
     sample = random.random()
     eps_threshold = EPS_END + (EPS_START - EPS_END) * \
         math.exp(-1. * steps_done / EPS_DECAY)
-    steps_done += 1
+    if not evaluation_state:
+        steps_done += 1
     if (sample > eps_threshold) or evaluation_state:
         with torch.no_grad():
-            # t.max(1) will return largest column value of each row.
-            # second column on max result is index of where max element was
-            # found, so we pick action with the larger expected reward.
-            return policy_net(state).max(1)[1].view(1, 1), False
+            return policy_net(state).max(1)[1].view(1, 1)
     else:
-        return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long), True
+        return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
 
 def optimize_model():
     if len(memory) < BATCH_SIZE:
@@ -178,7 +176,7 @@ summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'acti
 
 evaluation_state = False
 
-num_episodes = 9000
+num_episodes = 12000
 for i_episode in tqdm(range(num_episodes)):
     # Initialize the environment and state
     env.reset()
@@ -189,9 +187,12 @@ for i_episode in tqdm(range(num_episodes)):
 
     for t in count():
         # Select and perform an action
-        action, noise = select_action(state, evaluation_state)
+        action = select_action(state, evaluation_state)
         _, rewards, done, _ = env.step(action.item())
-        reward = torch.tensor([rewards], device=device)
+        
+        if not evaluation_state:
+            reward = torch.tensor([rewards], device=device)
+
         # Observe new state
         last_screen = current_screen
         current_screen = env.get_screen()
@@ -209,16 +210,15 @@ for i_episode in tqdm(range(num_episodes)):
             # Store the transition in memory
             memory.push(state, action, next_state, reward)
 
+         # Move to the next state
+        state = next_state
+
+        if not evaluation_state:
             # Perform one step of the optimization (on the target network)
             optimize_model()
 
-        # Move to the next state
-        state = next_state
-
         if done:
             evaluation_state = not evaluation_state
-            if evaluation_state:
-                i_episode = i_episode - 1
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
