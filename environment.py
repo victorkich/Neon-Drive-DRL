@@ -69,14 +69,14 @@ class env():
     def step(self, action):
         done = False
         keyboard.send(self.movements[action])
-        time.sleep(0.3)
+        time.sleep(0.25)
         hist = histogram(self.rgb_frame)
         comparation = cv2.compareHist(self.hist_restart, hist, cv2.HISTCMP_BHATTACHARYYA)
-        multiplicator = time.time() - self.initial_time
-        if multiplicator >= 50:
-            done = True
-        if comparation > 0.15:
-            rew = 1
+        if (comparation > 0.15):
+            multiplicator = time.time() - self.initial_time
+            if (multiplicator >= 2):
+                rew = 1
+            rew = 0
         else:
             done = True
             rew = 0
