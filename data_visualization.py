@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
+from scipy.signal import lfilter
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
@@ -9,7 +10,7 @@ def animate(i):
     global count
     global first
     if first:
-        time.sleep(5)
+        time.sleep(0)
         first = False
     if count < len(rewards):
         count = count + 50
@@ -37,14 +38,10 @@ print('Computing Real Rewards: ')
 rewards = [len(df[df.epoch == epochs[i]])-1 for i in tqdm(range(epochs.size))]
 num_epochs = np.arange(len(rewards))
 
-mean_threshold = 50
-mean = []
-print('Computing Filtered Rewards: ')
-for i in tqdm(range(len(rewards))):
-    if i < mean_threshold:
-        mean.append(sum(rewards[:i+1])/(i+1))
-    else:
-        mean.append(sum(rewards[i-mean_threshold:i+1])/mean_threshold)
+n = 15  # the larger n is, the smoother curve will be
+b = [1.0 / n] * n
+a = 1
+mean = lfilter(b,a,rewards)
 
 print('Plotting the graphs: ')
 first = True
