@@ -83,7 +83,7 @@ python3 data_visualization.py --file data.csv
 </p>
 
 <p align="center"> 
-  <img src="media/reward_graph.gif" alt="Rewards Graphs Comparation"/>
+  <img src="media/reward_graph.gif" alt="Rewards Graphs Comparation" width="1100"/>
 </p>
 
 <p align="justify"> 
