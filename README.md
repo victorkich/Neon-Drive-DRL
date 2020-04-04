@@ -83,9 +83,7 @@ python3 data_visualization.py --file data.csv
 </p>
 
 <p align="center"> 
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
-  <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.mitzvahmarket.com%2Fwp-content%2Fuploads%2F2013%2F06%2FYour-Logo-Here-Black-2-e1371130716893.jpg&f=1&nofb=1" alt="Neon Drive">
+  <img src="media/reward_graph.gif" alt="Rewards Graphs Comparation"/>
 </p>
 
 <p align="justify"> 
