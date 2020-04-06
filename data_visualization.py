@@ -22,8 +22,8 @@ def animate(i):
             linewidth=1, label='Real Rewards')
     ax.plot(num_epochs[:count], mean[:count], color='r', linestyle='-',
             linewidth=1, label='Filtered Rewards')
-    ax.set_title('Reward per Epoch', size=10)
-    ax.legend(loc=2, prop={'size':10})
+    ax.set_title('Reward per Epoch', size=20)
+    ax.legend(loc=2, prop={'size':20})
     ax.set_xlabel('Epoch')
     ax.set_ylabel('Reward')
     ax.set_xlim([0, len(rewards)+50])
