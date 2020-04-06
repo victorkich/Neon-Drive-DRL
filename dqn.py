@@ -86,11 +86,11 @@ class DQN(nn.Module):
         return self.head(x.view(x.size(0), -1))
 
 BATCH_SIZE = 128
-GAMMA = 0.99
+GAMMA = 0.995
 EPS_START = 0.9
-EPS_END = 0.03
-EPS_DECAY = 250
-TARGET_UPDATE = 30
+EPS_END = 0.0
+EPS_DECAY = 2000
+TARGET_UPDATE = 5
 
 init_screen = env.get_screen()
 _, _, screen_height, screen_width = init_screen.shape
@@ -110,7 +110,7 @@ target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters())
-memory = ReplayMemory(20000)
+memory = ReplayMemory(30000)
 
 steps_done = 0
 
@@ -176,7 +176,7 @@ summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'acti
 
 evaluation_state = False
 
-num_episodes = 12000
+num_episodes = 4000
 for i_episode in tqdm(range(num_episodes)):
     # Initialize the environment and state
     env.reset()
@@ -218,7 +218,7 @@ for i_episode in tqdm(range(num_episodes)):
             optimize_model()
 
         if done:
-            evaluation_state = not evaluation_state
+            #evaluation_state = not evaluation_state
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
