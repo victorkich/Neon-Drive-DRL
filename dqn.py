@@ -4,8 +4,8 @@
 '''
 from collections import namedtuple
 from itertools import count
-from PIL import Image
 from tqdm import tqdm
+import pandas as pd
 import environment
 import torch
 import torch.nn as nn
@@ -15,14 +15,11 @@ import argparse
 import time
 import math
 import random
-import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--train", help="path of your actual train model")
-parser.add_argument("--save", default='new_policy_net.pth', required=True,
-                    help="path of your new train model")
-parser.add_argument("--resolution", default='1920x1080', required=True,
-                    help="insert your monitor 0 resolution")
+parser.add_argument("--test", help="path of your actual train model")
+parser.add_argument("--save", default='models/policy_net', help="path of your new train model")
+parser.add_argument("--resolution", default='1920x1080', required=True, help="insert your monitor 0 resolution")
 args = parser.parse_args()
 input_resolution = args.resolution.split('x')
 path_save = args.save
@@ -33,9 +30,8 @@ time.sleep(3)
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
-Transition = namedtuple('Transition',
-                        ('state', 'action', 'next_state', 'reward'))
 
 class ReplayMemory(object):
 
@@ -57,21 +53,21 @@ class ReplayMemory(object):
     def __len__(self):
         return len(self.memory)
 
-class DQN(nn.Module):
 
+class DQN(nn.Module):
     def __init__(self, h, w, outputs):
         super(DQN, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=2)
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1)
         self.bn1 = nn.BatchNorm2d(16)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=2)
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=1)
         self.bn2 = nn.BatchNorm2d(32)
-        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
+        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=1)
         self.bn3 = nn.BatchNorm2d(32)
 
         # Number of Linear input connections depends on output of conv2d layers
         # and therefore the input image size, so compute it.
-        def conv2d_size_out(size, kernel_size = 5, stride = 2):
-            return (size - (kernel_size - 1) - 1) // stride  + 1
+        def conv2d_size_out(size, kernel_size=5, stride=1):
+            return (size - (kernel_size - 1) - 1) // stride + 1
         convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w)))
         convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h)))
         linear_input_size = convw * convh * 32
@@ -85,11 +81,12 @@ class DQN(nn.Module):
         x = F.relu(self.bn3(self.conv3(x)))
         return self.head(x.view(x.size(0), -1))
 
+
 BATCH_SIZE = 128
 GAMMA = 0.995
-EPS_START = 0.9
-EPS_END = 0.0
-EPS_DECAY = 2000
+EPS_START = 0.99
+EPS_END = 0.01
+EPS_DECAY = 1500
 TARGET_UPDATE = 5
 
 init_screen = env.get_screen()
@@ -98,8 +95,8 @@ _, _, screen_height, screen_width = init_screen.shape
 # Get number of actions from action space
 n_actions = 3
 
-if args.train:
-    path_train = args.train
+if args.test:
+    path_train = args.test
     policy_net = torch.load(path_train)
     policy_net.eval()
 else:
@@ -114,18 +111,19 @@ memory = ReplayMemory(30000)
 
 steps_done = 0
 
-def select_action(state, evaluation_state):
+
+def select_action(state):
     global steps_done
     sample = random.random()
     eps_threshold = EPS_END + (EPS_START - EPS_END) * \
         math.exp(-1. * steps_done / EPS_DECAY)
-    if not evaluation_state:
-        steps_done += 1
-    if (sample > eps_threshold) or evaluation_state:
+    steps_done += 1
+    if sample > eps_threshold:
         with torch.no_grad():
             return policy_net(state).max(1)[1].view(1, 1)
     else:
         return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
+
 
 def optimize_model():
     if len(memory) < BATCH_SIZE:
@@ -136,10 +134,8 @@ def optimize_model():
 
     # Compute a mask of non-final states and concatenate the batch elements
     # (a final state would've been the one after which simulation ended)
-    non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
-                                          batch.next_state)), device=device, dtype=torch.bool)
-    non_final_next_states = torch.cat([s for s in batch.next_state
-                                                if s is not None])
+    non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch.next_state)), device=device, dtype=torch.bool)
+    non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
     state_batch = torch.cat(batch.state)
     action_batch = torch.cat(batch.action)
     reward_batch = torch.cat(batch.reward)
@@ -170,16 +166,21 @@ def optimize_model():
 
     optimizer.step()
 
-import pandas as pd
+
 summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': [],
                         'evaluation_state': []})
-
-evaluation_state = False
-
-num_episodes = 4000
-for i_episode in tqdm(range(num_episodes)):
+evaluation_range = 4
+num_episodes = 10000
+for i_episode in tqdm(range(1, num_episodes+1)):
     # Initialize the environment and state
     env.reset()
+
+    # Check for evaluation state
+    if i_episode % evaluation_range == 0:
+        evaluation_state = True
+        torch.save(policy_net, path_save + '_' + str(i_episode) + '.pth')
+    else:
+        evaluation_state = False
 
     last_screen = env.get_screen()
     current_screen = env.get_screen()
@@ -187,11 +188,12 @@ for i_episode in tqdm(range(num_episodes)):
 
     for t in count():
         # Select and perform an action
-        action = select_action(state, evaluation_state)
-        _, rewards, done, _ = env.step(action.item())
-
-        if not evaluation_state:
-            reward = torch.tensor([rewards], device=device)
+        if evaluation_state:
+            action = policy_net.forward(state).max(1)[1].view(1, 1)
+        else:
+            action = select_action(state)
+        rewards, done = env.step(action.item())
+        reward = torch.tensor([rewards], device=device)
 
         # Observe new state
         last_screen = current_screen
@@ -210,7 +212,7 @@ for i_episode in tqdm(range(num_episodes)):
             # Store the transition in memory
             memory.push(state, action, next_state, reward)
 
-         # Move to the next state
+        # Move to the next state
         state = next_state
 
         if not evaluation_state:
@@ -218,13 +220,11 @@ for i_episode in tqdm(range(num_episodes)):
             optimize_model()
 
         if done:
-            #evaluation_state = not evaluation_state
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(policy_net.state_dict())
 
-    torch.save(policy_net, path_save)
     summary.to_csv('data.csv')
 
-print('Complete')
+print('Complete!')

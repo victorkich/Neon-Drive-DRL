@@ -80,7 +80,7 @@ class env():
         else:
             done = True
             rew = 0
-        return [], rew, done, []
+        return rew, done
 
     def get_screen(self):
         return resize(self.bw_frame).unsqueeze(0).to(device)
