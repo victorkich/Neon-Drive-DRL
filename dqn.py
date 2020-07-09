@@ -19,14 +19,17 @@ import random
 parser = argparse.ArgumentParser()
 parser.add_argument("--test", help="path of your actual train model")
 parser.add_argument("--save", default='models/policy_net', help="path of your new train model")
-parser.add_argument("--resolution", default='1920x1080', required=True, help="insert your monitor 0 resolution")
+parser.add_argument("--resolution", default='1920x1080', help="insert your monitor 0 resolution")
 args = parser.parse_args()
 input_resolution = args.resolution.split('x')
 path_save = args.save
 
 resolution = [int(input_resolution[0]), int(input_resolution[1])]
+print("Starting Environment...")
 env = environment.env(resolution)
-time.sleep(3)
+print("Starting image capture...")
+for i in tqdm(range(100)):
+    time.sleep(0.05)
 
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -57,16 +60,16 @@ class ReplayMemory(object):
 class DQN(nn.Module):
     def __init__(self, h, w, outputs):
         super(DQN, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1)
-        self.bn1 = nn.BatchNorm2d(16)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=1)
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=5, stride=2)
+        self.bn1 = nn.BatchNorm2d(32)
+        self.conv2 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
         self.bn2 = nn.BatchNorm2d(32)
-        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=1)
+        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
         self.bn3 = nn.BatchNorm2d(32)
 
         # Number of Linear input connections depends on output of conv2d layers
         # and therefore the input image size, so compute it.
-        def conv2d_size_out(size, kernel_size=5, stride=1):
+        def conv2d_size_out(size, kernel_size=5, stride=2):
             return (size - (kernel_size - 1) - 1) // stride + 1
         convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w)))
         convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h)))
@@ -82,12 +85,12 @@ class DQN(nn.Module):
         return self.head(x.view(x.size(0), -1))
 
 
-BATCH_SIZE = 128
-GAMMA = 0.995
-EPS_START = 0.99
+BATCH_SIZE = 32
+GAMMA = 0.99
+EPS_START = 0.7
 EPS_END = 0.01
-EPS_DECAY = 1500
-TARGET_UPDATE = 5
+EPS_DECAY = 400
+TARGET_UPDATE = 4
 
 init_screen = env.get_screen()
 _, _, screen_height, screen_width = init_screen.shape
@@ -107,8 +110,7 @@ target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters())
-memory = ReplayMemory(30000)
-
+memory = ReplayMemory(20000)
 steps_done = 0
 
 
@@ -163,14 +165,16 @@ def optimize_model():
     loss.backward()
     for param in policy_net.parameters():
         param.grad.data.clamp_(-1, 1)
-
     optimizer.step()
 
 
 summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': [],
                         'evaluation_state': []})
-evaluation_range = 4
+evaluation_range = 10
 num_episodes = 10000
+print("Starting!")
+env.reset()
+
 for i_episode in tqdm(range(1, num_episodes+1)):
     # Initialize the environment and state
     env.reset()
@@ -192,12 +196,12 @@ for i_episode in tqdm(range(1, num_episodes+1)):
             action = policy_net.forward(state).max(1)[1].view(1, 1)
         else:
             action = select_action(state)
-        rewards, done = env.step(action.item())
+        obs2, rewards, done = env.step(action.item())
         reward = torch.tensor([rewards], device=device)
 
         # Observe new state
         last_screen = current_screen
-        current_screen = env.get_screen()
+        current_screen = obs2
         if not done:
             next_state = current_screen - last_screen
         else:
