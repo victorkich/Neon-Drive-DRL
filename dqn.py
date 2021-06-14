@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-''' Modules for installation -> torch, tqdm, numpy, argparse, cv2, mss.
-    Use pip3 install 'module'.
-'''
 from collections import namedtuple
 from itertools import count
 from tqdm import tqdm
@@ -37,7 +33,6 @@ Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'
 
 
 class ReplayMemory(object):
-
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = []
@@ -89,7 +84,7 @@ BATCH_SIZE = 32
 GAMMA = 0.99
 EPS_START = 0.7
 EPS_END = 0.01
-EPS_DECAY = 400
+EPS_DECAY = 200
 TARGET_UPDATE = 4
 
 init_screen = env.get_screen()
@@ -117,8 +112,7 @@ steps_done = 0
 def select_action(state):
     global steps_done
     sample = random.random()
-    eps_threshold = EPS_END + (EPS_START - EPS_END) * \
-        math.exp(-1. * steps_done / EPS_DECAY)
+    eps_threshold = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
     steps_done += 1
     if sample > eps_threshold:
         with torch.no_grad():
@@ -170,7 +164,7 @@ def optimize_model():
 
 summary = pd.DataFrame({'epoch': [], 'step': [], 'reward': [], 'done': [], 'action': [],
                         'evaluation_state': []})
-evaluation_range = 10
+evaluation_range = 2
 num_episodes = 10000
 print("Starting!")
 env.reset()
@@ -225,6 +219,9 @@ for i_episode in tqdm(range(1, num_episodes+1)):
 
         if done:
             break
+        else:
+            time.sleep(0.2)
+
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(policy_net.state_dict())

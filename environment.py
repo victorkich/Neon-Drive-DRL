@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
-''' Modules for installation -> torch, torchvision, numpy, keyboard, cv2, mss.
-    Use pip3 install 'module'.
-'''
 from skimage.filters import threshold_triangle
+from torchvision import transforms as T
 from skimage import img_as_ubyte
-import torchvision.transforms as T
 from PIL import Image
 import numpy as np
 import threading
@@ -20,16 +16,18 @@ resize = T.Compose([T.ToPILImage(),
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 def histogram(image):
-    ''' Histogram generate function
-    '''
-    hist = cv2.calcHist([image], [0, 1, 2], None, [8, 8, 8],[0, 256, 0, 256, 0, 256])
+    """ Histogram generate function
+    """
+    hist = cv2.calcHist([image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
     hist = cv2.normalize(hist, hist).flatten()
     return hist
 
+
 class env():
-    ''' Class for environment management
-    '''
+    """ Class for environment management
+    """
     def __init__(self, resolution):
         self.w, self.h = resolution
         self.movements = ["a", "d", "w"]
@@ -86,7 +84,7 @@ class env():
         else:
             obs2 = self.screen_history[-2]
             done = True
-            rew = 0
+            rew = -1
             self.screen_history = []
         return obs2, rew, done
 
