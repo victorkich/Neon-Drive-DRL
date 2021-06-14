@@ -14,11 +14,9 @@ import random
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--test", help="path of your actual train model")
-parser.add_argument("--save", default='models/policy_net', help="path of your new train model")
 parser.add_argument("--resolution", default='1920x1080', help="insert your monitor 0 resolution")
 args = parser.parse_args()
 input_resolution = args.resolution.split('x')
-path_save = args.save
 
 resolution = [int(input_resolution[0]), int(input_resolution[1])]
 print("Starting Environment...")
@@ -176,7 +174,8 @@ for i_episode in tqdm(range(1, num_episodes+1)):
     # Check for evaluation state
     if i_episode % evaluation_range == 0:
         evaluation_state = True
-        torch.save(policy_net, path_save + '_' + str(i_episode) + '.pth')
+        torch.save(policy_net, 'models/policy_net_' + str(i_episode) + '.pth')
+        torch.save(target_net, 'models/target_net_' + str(i_episode) + '.pth')
     else:
         evaluation_state = False
 
@@ -228,4 +227,4 @@ for i_episode in tqdm(range(1, num_episodes+1)):
 
     summary.to_csv('data.csv')
 
-print('Complete!')
+print('Completed!')
