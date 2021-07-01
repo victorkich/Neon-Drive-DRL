@@ -7,3 +7,5 @@ mss
 numpy
 argparse
 tqdm
+pandas
+keyboard

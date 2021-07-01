@@ -15,7 +15,7 @@ import time
 import mss
 
 resize = T.Compose([T.ToPILImage(),
-                    T.Resize(40, interpolation=Image.CUBIC),
+                    T.Resize(40, interpolation=T.InterpolationMode.BILINEAR),
                     T.ToTensor()])
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

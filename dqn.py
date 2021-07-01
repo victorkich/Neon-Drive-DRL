@@ -193,6 +193,7 @@ for i_episode in tqdm(range(num_episodes)):
     state = current_screen - last_screen
 
     for t in count():
+        print(state.shape)
         # Select and perform an action
         action = select_action(state, evaluation_state)
         _, rewards, done, _ = env.step(action.item())
