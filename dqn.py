@@ -26,7 +26,7 @@ input_resolution = args.resolution.split('x')
 path_save = args.save
 
 resolution = [int(input_resolution[0]), int(input_resolution[1])]
-env = environment.env(resolution, noise=False)
+env = environment.env(resolution, noise=True, noiseType='gauss')
 
 print("Go to the game screen!")
 for i in tqdm(range(100)):

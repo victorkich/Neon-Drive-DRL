@@ -9,6 +9,7 @@ from PIL import Image
 import numpy as np
 import threading
 import keyboard
+import noise
 import torch
 import cv2
 import time
@@ -30,10 +31,11 @@ def histogram(image):
 
 
 class env():
-    def __init__(self, resolution, noise=False):
+    def __init__(self, resolution, noise=False, noiseType='s&p'):
         self.w, self.h = resolution
         self.movements = ["a", "d", "w"]
         self.noise = noise
+        self.noiseType = noiseType
 
         img = cv2.imread('gameover.jpg')
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -43,25 +45,6 @@ class env():
         imageCapture.setDaemon(True)
         imageCapture.start()
 
-    def sap_noise(self, image):
-        row, col, ch = image.shape
-        s_vs_p = 0.5
-        amount = 0.004
-        out = np.copy(image)
-
-        # Salt mode
-        num_salt = np.ceil(amount * image.size * s_vs_p)
-        coords = [np.random.randint(0, i - 1, int(num_salt))
-                  for i in image.shape]
-        out[coords] = 1
-
-        # Pepper mode
-        num_pepper = np.ceil(amount * image.size * (1. - s_vs_p))
-        coords = [np.random.randint(0, i - 1, int(num_pepper))
-                  for i in image.shape]
-        out[coords] = 0
-        return out
-
     def imageCapture(self):
         monitor = {'left': 0, 'top': 0, 'width': self.w, 'height': self.h}
         with mss.mss() as sct:
@@ -69,7 +52,8 @@ class env():
                 sct_img = sct.grab(monitor)
                 img_np = np.array(sct_img)
                 if self.noise:
-                    img_np = self.sap_noise(img_np)
+                    img_np = noise.noisy(img_np, self.noiseType)
+                    img_np = cv2.normalize(img_np, None, 0, 255, cv2.NORM_MINMAX).astype('uint8')
                 gray_frame = cv2.cvtColor(img_np, cv2.COLOR_BGR2GRAY)
                 threash_triangle = threshold_triangle(gray_frame)
                 binary_triangle = gray_frame > threash_triangle
@@ -89,7 +73,7 @@ class env():
     def step(self, action):
         done = False
         keyboard.send(self.movements[action])
-        time.sleep(0.25)
+        time.sleep(0.3)
         hist = histogram(self.rgb_frame)
         comparison = cv2.compareHist(self.hist_restart, hist, cv2.HISTCMP_BHATTACHARYYA)
         if comparison > 0.15:
